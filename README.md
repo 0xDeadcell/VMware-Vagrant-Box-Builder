@@ -35,5 +35,11 @@ options:
   --skip_shrink         Skip shrinking the VMDKs
 ```
 
+## Example usage:
 
-For how you might use this tool in conjuction with building a homelab checkout my blog at https://kaladin.dev/blog/vmware-homelab-automation-with-vagrant/
+
+```bash
+python VMware_Box_Builder.py -b ParrotOS -d "C:\Users\0xDea\VM\Directory\"
+
+```
+For deails on how you might use this tool in conjuction with building a homelab checkout my blog post on (vmware-homelab-automation)[https://kaladin.dev/blog/vmware-homelab-automation-with-vagrant/] at https://kaladin.dev
