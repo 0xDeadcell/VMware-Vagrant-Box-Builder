@@ -100,8 +100,7 @@ def create_box_archive(vm_directory_path, box_name, verbose=False, skip_shrink=F
             os.system(shrink_command)
 
     # Create the BOX Archive
-    if verbose:
-        print(f"[*] Compressing files to create the BOX file archive.")
+    print(f"[*] Compressing files to create the BOX file archive.")
     
     files_to_compress =  ' '.join([i.__str__() for i in valid_vmware_files])
     box_creation = run(f"tar -cvzf {str(os.path.splitext(box_name)[0])}.box {files_to_compress}", stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
