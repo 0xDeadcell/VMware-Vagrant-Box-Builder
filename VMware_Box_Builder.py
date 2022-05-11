@@ -3,7 +3,7 @@ from asyncio import start_server
 import os
 import pathlib
 import argparse
-from subprocess import PIPE, run, call
+from subprocess import PIPE, run
 
 
 
@@ -104,9 +104,11 @@ def create_box_archive(vm_directory_path, box_name, verbose=False, skip_shrink=F
     # Create the BOX Archive
     if verbose:
         print(f"[*] Compressing files to create the BOX file archive.")
+    
 
-    os.system(f"tar cvzf {str(os.path.splitext(box_name)[0])}.box ./{' ./'.join(valid_vmware_files)}")
-
+    files_to_compress =  ' '.join([i.__str__() for i in valid_vmware_files])
+    box_creation = run(f"tar -cvzf {str(os.path.splitext(box_name)[0])}.box {files_to_compress}", stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
+    print(box_creation.stdout)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Create a .BOX archive from VMware files to be used with Vagrant.')
