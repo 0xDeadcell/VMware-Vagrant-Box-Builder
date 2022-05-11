@@ -115,4 +115,9 @@ if __name__ == "__main__":
     parser.add_argument("--skip_defrag", help="Skip defragmenting the VMDKs", action="store_true")
     parser.add_argument("--skip_shrink", help="Skip shrinking the VMDKs", action="store_true")
     args = parser.parse_args()
-    create_box_archive(vm_directory_path=args.vm_directory_path, box_name=get_box_name_from_vmx(vm_directory_path=args.vm_directory_path, verbose=args.verbose), skip_defrag=args.skip_defrag, skip_shrink=args.skip_shrink, verbose=args.verbose)
+    if args.box_name:
+        if args.verbose:
+            print(f"[*] Box name set to {args.box_name}")
+        create_box_archive(vm_directory_path=args.vm_directory_path, box_name=args.box_name, skip_defrag=args.skip_defrag, skip_shrink=args.skip_shrink, verbose=args.verbose)
+    else:
+        create_box_archive(vm_directory_path=args.vm_directory_path, box_name=get_box_name_from_vmx(vm_directory_path=args.vm_directory_path, verbose=args.verbose), skip_defrag=args.skip_defrag, skip_shrink=args.skip_shrink, verbose=args.verbose)
