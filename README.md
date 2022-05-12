@@ -44,7 +44,7 @@ Defragment and shrink the VMDKs, and then box up the VMware files required by Va
 python VMware_Box_Builder.py -b ParrotOS -d "C:\Users\0xDeadcell\Path\To\VM\Directory\"
 ```
 
-Skip to boxing up the valid files needed by packer, will choose a box name based off of the DisplayName in the .VMX file.
+Skip to boxing up valid files needed by packer, will choose a box name based off of the DisplayName in the .VMX file.
 ```bash
 python VMware_Box_Builder.py --skip_defrag --skip_shrink -d "C:\Users\0xDeadcell\Path\To\VM\Directory\"
 ```
