@@ -3,7 +3,36 @@
 Simplifies the process of having to manually create Vagrant BOX files for VMware
 
 
+
 ## Installation Steps
+
+Install Vagrant
+```
+https://www.vagrantup.com/downloads
+```
+
+Install Vagrant VMware utility tool
+```
+https://www.vagrantup.com/vmware/downloads
+```
+
+Install VMware Vagrant provider plugin
+```bash
+vagrant plugin install vagrant-vmware-desktop
+````
+
+
+### Optional Install
+Download vmware utility needed for defragmenting and shrinking VMDKs
+```
+https://kb.vmware.com/s/article/1023856
+```
+OR
+```
+https://drive.google.com/drive/folders/1XnEevr_5UN8xg7NUj0HTPAVwQwfuI6CX?usp=sharing
+```
+
+## Tool Setup
 
 Clone the project
 
@@ -16,13 +45,6 @@ Go to the project directory
 ```bash
 cd VMware-Vagrant-Box-Builder
 ```
-
-Download vmware utility needed for defragmenting and shrinking VMDKs
-
-```
-https://kb.vmware.com/s/article/1023856
-```
-
 
 ## VMware_Box_Builder Options
 
@@ -47,7 +69,7 @@ options:
 
 ```
 
-## Example usage:
+## Tool usage:
 
 Defragment and shrink the VMDKs, and then box up the VMware files required by Vagrant
 ```bash
@@ -64,5 +86,4 @@ Provision the .BOX file to be ran with vagrant up or uploaded to hashicorp's clo
 ```bash
 python VMware_Box_Builder.py --vagrantify
 ```
-
-For details on how you might use this tool in conjuction with building a homelab checkout my blog post on (vmware-homelab-automation)[https://kaladin.dev/blog/vmware-homelab-automation-with-vagrant/] at https://kaladin.dev
+For details on how you might use this tool in conjuction with building a homelab checkout my blog post on [vmware homelab automation](https://kaladin.dev/blog/vmware-homelab-automation-with-vagrant) at https://kaladin.dev/
