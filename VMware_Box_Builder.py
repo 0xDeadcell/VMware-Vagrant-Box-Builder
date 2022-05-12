@@ -15,9 +15,7 @@ def get_valid_files(vm_directory_path, verbose=False):
     if not os.path.exists(os.path.join(vm_directory_path, "metadata.json")):
         # Create metadata.json if file doesn't exist
         with open(os.path.join(vm_directory_path, "metadata.json"), 'w') as f:
-            f.write("""{
-  "provider": "vmware_desktop"
-}""")
+            f.write("""{ "provider" : "vmware_desktop" }""")
 
 
     if verbose:
@@ -113,7 +111,7 @@ def create_box_archive(vm_directory_path, box_name, verbose=False, skip_shrink=F
     # Create the BOX Archive
     print(f"[*] Compressing files to create the BOX file archive.")
     
-    files_to_compress =  ' '.join([i.__str__() for i in valid_vmware_files])
+    files_to_compress =  './' + ' ./'.join([os.path.splitext(i.__str__())[0] for i in valid_vmware_files])
     if verbose:
         print(f"[*] Files to compress: {files_to_compress}")
     box_creation = run(f"tar -cvzf {str(os.path.splitext(box_name)[0])}.box {files_to_compress}", stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
