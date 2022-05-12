@@ -86,5 +86,4 @@ Provision the .BOX file to be ran with vagrant up or uploaded to hashicorp's clo
 ```bash
 python VMware_Box_Builder.py --vagrantify
 ```
-
-For details on how you might use this tool in conjuction with building a homelab checkout my blog post on (vmware-homelab-automation)[https://kaladin.dev/blog/vmware-homelab-automation-with-vagrant/] at https://kaladin.dev
+For details on how you might use this tool in conjuction with building a homelab checkout my blog post on [vmware homelab automation](https://kaladin.dev/blog/vmware-homelab-automation-with-vagrant) at https://kaladin.dev/
