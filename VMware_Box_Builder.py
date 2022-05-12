@@ -1,7 +1,8 @@
 import os
+import sys
 import pathlib
 import argparse
-from subprocess import PIPE, run
+from subprocess import PIPE, STDOUT, run, check_call
 
 
 
@@ -9,10 +10,20 @@ from subprocess import PIPE, run
 def get_valid_files(vm_directory_path, verbose=False):
     os.chdir(vm_directory_path)
 
+
+    # Check for metadata.json file (required for Vagrant to recognize the provider)
+    if not os.path.exists(os.path.join(vm_directory_path, "metadata.json")):
+        # Create metadata.json if file doesn't exist
+        with open(os.path.join(vm_directory_path, "metadata.json"), 'w') as f:
+            f.write("""{
+  "provider": "vmware_desktop"
+}""")
+
+
     if verbose:
         print(f'[*] Checking \"{args.vm_directory_path}\" for valid files...')
 
-    valid_vmware_extensions = [".nvram", ".vmsd", ".vmx", ".vmxf", ".vmdk"]
+    valid_vmware_extensions = [".nvram", ".vmsd", ".vmx", ".vmxf", ".vmdk", ".json"]
     valid_vmware_files = [pathlib.Path.joinpath(vm_directory_path, f) for f in os.listdir(vm_directory_path) if os.path.splitext(f)[1] in valid_vmware_extensions]
     
     if verbose and valid_vmware_files:
@@ -103,20 +114,48 @@ def create_box_archive(vm_directory_path, box_name, verbose=False, skip_shrink=F
     print(f"[*] Compressing files to create the BOX file archive.")
     
     files_to_compress =  ' '.join([i.__str__() for i in valid_vmware_files])
+    if verbose:
+        print(f"[*] Files to compress: {files_to_compress}")
     box_creation = run(f"tar -cvzf {str(os.path.splitext(box_name)[0])}.box {files_to_compress}", stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
     print(box_creation.stdout)
 
+
+def prepare_box_for_vagrant(vm_directory_path, box_name=None, verbose=False):
+    if verbose:
+        print(f"[*] Checking {vm_directory_path} for .Box files")
+    
+    if not box_name:
+        box_filepath = [os.path.join(vm_directory_path, f) for f in os.listdir(vm_directory_path) if os.path.splitext(f)[1].lower() == ".box"][0]
+    else:
+        box_filepath = os.path.join(vm_directory_path, box_name)
+
+    if verbose:
+        print(f"[*] Provisioning '{os.path.split(box_filepath)[1].lower()}' file.")
+    check_call(f"vagrant box add {box_filepath} --provider vmware_desktop --name anonymous/{os.path.split(box_filepath)[1].lower()}", stdout=sys.stdout, stderr=STDOUT)
+    #check_call(f"vagrant box list", stdout=sys.stdout, stderr=STDOUT)
+    check_call(f"vagrant init anonymous/{os.path.split(box_filepath)[0].lower()}", stdout=sys.stdout, stderr=STDOUT)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Create a .BOX archive from VMware files to be used with Vagrant.')
-    parser.add_argument("-b", "--box_name", help="The name of the BOX file that should be created", action="store")
+    parser.add_argument("-b", "--box_name", help="The name of the BOX file that should be created or used", action="store", default=None)
     parser.add_argument("-d", "--vm_directory_path", help="The source VM Directory that will be used to create a .BOX archive. Defaults to the current directory.", nargs='?', default=os.getcwd(), type=pathlib.Path)
     parser.add_argument("-v", "--verbose", help="Print verbose output", action="store_true")
     parser.add_argument("--skip_defrag", help="Skip defragmenting the VMDKs", action="store_true")
     parser.add_argument("--skip_shrink", help="Skip shrinking the VMDKs", action="store_true")
+    parser.add_argument("--vagrantify", help="Prepare the .BOX archive for vagrant and to be uploaded", action="store_true")
     args = parser.parse_args()
+
+
+    if args.vagrantify:
+        prepare_box_for_vagrant(vm_directory_path=args.vm_directory_path, box_name=args.box_name, verbose=args.verbose)
+        exit(0)
+    
+    specific_box_name = get_box_name_from_vmx(vm_directory_path=args.vm_directory_path, verbose=args.verbose)
+
     if args.box_name:
         if args.verbose:
             print(f"[*] Box name set to {args.box_name}")
         create_box_archive(vm_directory_path=args.vm_directory_path, box_name=args.box_name, skip_defrag=args.skip_defrag, skip_shrink=args.skip_shrink, verbose=args.verbose)
     else:
-        create_box_archive(vm_directory_path=args.vm_directory_path, box_name=get_box_name_from_vmx(vm_directory_path=args.vm_directory_path, verbose=args.verbose), skip_defrag=args.skip_defrag, skip_shrink=args.skip_shrink, verbose=args.verbose)
+        create_box_archive(vm_directory_path=args.vm_directory_path, box_name=specific_box_name, skip_defrag=args.skip_defrag, skip_shrink=args.skip_shrink, verbose=args.verbose)
