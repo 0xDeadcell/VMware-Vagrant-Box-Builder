@@ -131,7 +131,7 @@ def prepare_box_for_vagrant(vm_directory_path, box_name=None, verbose=False):
         print(f"[*] Provisioning '{os.path.split(box_filepath)[1].lower()}' file.")
     check_call(f"vagrant box add {box_filepath} --provider vmware_desktop --name {os.path.split(box_filepath)[1].lower()} --force", stdout=sys.stdout, stderr=STDOUT)
     #check_call(f"vagrant box list", stdout=sys.stdout, stderr=STDOUT)
-    check_call(f"vagrant init anonymous/{os.path.split(box_filepath)[1].lower()} --force", stdout=sys.stdout, stderr=STDOUT)
+    check_call(f"vagrant init {os.path.split(box_filepath)[1].lower()} --force", stdout=sys.stdout, stderr=STDOUT)
 
 
 if __name__ == "__main__":
