@@ -111,7 +111,7 @@ def create_box_archive(vm_directory_path, box_name, verbose=False, skip_shrink=F
     # Create the BOX Archive
     print(f"[*] Compressing files to create the BOX file archive.")
     
-    files_to_compress =  './' + ' ./'.join([os.path.splitext(i.__str__())[0] for i in valid_vmware_files])
+    files_to_compress =  ' '.join([os.path.split(i.__str__())[-1] for i in valid_vmware_files])
     if verbose:
         print(f"[*] Files to compress: {files_to_compress}")
     box_creation = run(f"tar -cvzf {str(os.path.splitext(box_name)[0])}.box {files_to_compress}", stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
@@ -129,9 +129,9 @@ def prepare_box_for_vagrant(vm_directory_path, box_name=None, verbose=False):
 
     if verbose:
         print(f"[*] Provisioning '{os.path.split(box_filepath)[1].lower()}' file.")
-    check_call(f"vagrant box add {box_filepath} --provider vmware_desktop --name {os.path.split(box_filepath)[1].lower()}", stdout=sys.stdout, stderr=STDOUT)
+    check_call(f"vagrant box add {box_filepath} --provider vmware_desktop --name {os.path.split(box_filepath)[1].lower()} --force", stdout=sys.stdout, stderr=STDOUT)
     #check_call(f"vagrant box list", stdout=sys.stdout, stderr=STDOUT)
-    check_call(f"vagrant init anonymous/{os.path.split(box_filepath)[1].lower()}", stdout=sys.stdout, stderr=STDOUT)
+    check_call(f"vagrant init anonymous/{os.path.split(box_filepath)[1].lower()} --force", stdout=sys.stdout, stderr=STDOUT)
 
 
 if __name__ == "__main__":
