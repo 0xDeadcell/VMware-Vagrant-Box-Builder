@@ -115,7 +115,7 @@ def create_box_archive(vm_directory_path, box_name, verbose=False, skip_shrink=F
     # Create the BOX Archive
     print(f"[*] Compressing files to create the BOX file archive.")
     
-    files_to_compress =  ' '.join([os.path.split(i.__str__())[-1] for i in valid_vmware_files])
+    files_to_compress =  ' '.join(['"' + os.path.split(i.__str__())[-1] + '"' for i in valid_vmware_files])
     if verbose:
         print(f"[*] Files to compress: {files_to_compress}")
     box_creation = run(f"tar -cvzf {str(os.path.splitext(box_name)[0])}.box {files_to_compress}", stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
