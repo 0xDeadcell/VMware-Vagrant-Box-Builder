@@ -75,7 +75,7 @@ def get_box_name_from_vmx(vm_directory_path, verbose=False):
         
 
     for line in vmx_lines:
-        if line.startswith("displayname"):
+        if line.lower().startswith("displayname"):
             box_name = line.replace('"', '').strip("\n").split("=")[1].lstrip(" ").replace(" ", "_")
             print(f"[+] A Box name of '{box_name}' will be used.")
             return box_name
@@ -94,19 +94,23 @@ def create_box_archive(vm_directory_path, box_name, verbose=False, skip_shrink=F
     # check for VMDKs
     for vmdk in [i for i in valid_vmware_files if os.path.splitext(i)[1] == ".vmdk"]:
 
-        defrag_command = r'"C:\Program Files (x86)\VMware\VMware Workstation\vmware-vdiskmanager.exe" -d ' + str(vmdk)
-        shrink_command = r'"C:\Program Files (x86)\VMware\VMware Workstation\vmware-vdiskmanager.exe" -k ' + str(vmdk)
+        defrag_command = r'"C:\Program Files (x86)\VMware\VMware Workstation\vmware-vdiskmanager.exe" -d ' + '"' + str(vmdk) + '"'
+        shrink_command = r'"C:\Program Files (x86)\VMware\VMware Workstation\vmware-vdiskmanager.exe" -k ' + '"' + str(vmdk) + '"'
         
         print(f'[*] Defragmenting VMDK "{vmdk}"')
 
         # Defragment the VMDKs
         if not skip_defrag:
-            os.system(defrag_command)
+            if verbose:
+                print(f"[*] {defrag_command}")
+            check_call(defrag_command, stdout=sys.stdout, stderr=STDOUT)
         print(f'[*] Shrinking VMDK "{vmdk}"')
         
         # Compress/shrink the VMDKs
         if not skip_shrink:
-            os.system(shrink_command)
+            if verbose:
+                print(f"[*] {shrink_command}")
+            check_call(shrink_command, stdout=sys.stdout, stderr=STDOUT)
 
     # Create the BOX Archive
     print(f"[*] Compressing files to create the BOX file archive.")
@@ -149,11 +153,11 @@ if __name__ == "__main__":
         prepare_box_for_vagrant(vm_directory_path=args.vm_directory_path, box_name=args.box_name, verbose=args.verbose)
         exit(0)
     
-    specific_box_name = get_box_name_from_vmx(vm_directory_path=args.vm_directory_path, verbose=args.verbose)
 
     if args.box_name:
         if args.verbose:
             print(f"[*] Box name set to {args.box_name}")
         create_box_archive(vm_directory_path=args.vm_directory_path, box_name=args.box_name, skip_defrag=args.skip_defrag, skip_shrink=args.skip_shrink, verbose=args.verbose)
     else:
+        specific_box_name = get_box_name_from_vmx(vm_directory_path=args.vm_directory_path, verbose=args.verbose)
         create_box_archive(vm_directory_path=args.vm_directory_path, box_name=specific_box_name, skip_defrag=args.skip_defrag, skip_shrink=args.skip_shrink, verbose=args.verbose)
