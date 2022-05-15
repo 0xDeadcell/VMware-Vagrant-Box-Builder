@@ -146,7 +146,7 @@ if __name__ == "__main__":
     parser.add_argument("--skip_defrag", help="Skip defragmenting the VMDKs", action="store_true")
     parser.add_argument("--skip_shrink", help="Skip shrinking the VMDKs", action="store_true")
     parser.add_argument("--vagrantify", help="Prepare the .BOX archive for vagrant and to be uploaded", action="store_true")
-    parser.add_argument("--include-vagrantfile", help="Include a vagrantfile to be used as a template when combined with --vagrantify", action="store", default='')
+    parser.add_argument("--include_customfile", help="Include a custom (vagrant) file to be packaged in the .box when combined with --vagrantify", action="store", default='')
     args = parser.parse_args()
 
 
@@ -158,7 +158,7 @@ if __name__ == "__main__":
     if args.box_name:
         if args.verbose:
             print(f"[*] Box name set to {args.box_name}")
-        create_box_archive(vm_directory_path=args.vm_directory_path, box_name=args.box_name, skip_defrag=args.skip_defrag, skip_shrink=args.skip_shrink, verbose=args.verbose)
+        create_box_archive(vm_directory_path=args.vm_directory_path, box_name=args.box_name, skip_defrag=args.skip_defrag, skip_shrink=args.skip_shrink, verbose=args.verbose, vagrantfile=args.include_customfile)
     else:
         specific_box_name = get_box_name_from_vmx(vm_directory_path=args.vm_directory_path, verbose=args.verbose)
         create_box_archive(vm_directory_path=args.vm_directory_path, box_name=specific_box_name, skip_defrag=args.skip_defrag, skip_shrink=args.skip_shrink, verbose=args.verbose)
