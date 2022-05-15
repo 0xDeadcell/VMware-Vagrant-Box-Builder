@@ -84,7 +84,7 @@ def get_box_name_from_vmx(vm_directory_path, verbose=False):
         exit("[!] Could not determine box name from VMX file, please specify one with --box_name")
                  
 
-def create_box_archive(vm_directory_path, box_name, verbose=False, skip_shrink=False, skip_defrag=False):
+def create_box_archive(vm_directory_path, box_name, verbose=False, skip_shrink=False, skip_defrag=False, vagrantfile=''):
     valid_vmware_files = get_valid_files(vm_directory_path=vm_directory_path, verbose=verbose)
     vdisk_manager_path = get_vdiskmanager(verbose=verbose)
     
@@ -118,7 +118,7 @@ def create_box_archive(vm_directory_path, box_name, verbose=False, skip_shrink=F
     files_to_compress =  ' '.join(['"' + os.path.split(i.__str__())[-1] + '"' for i in valid_vmware_files])
     if verbose:
         print(f"[*] Files to compress: {files_to_compress}")
-    box_creation = run(f"tar -cvzf {str(os.path.splitext(box_name)[0])}.box {files_to_compress}", stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
+    box_creation = run(f"tar -cvzf {str(os.path.splitext(box_name)[0])}.box {files_to_compress} {vagrantfile}", stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
     print(box_creation.stdout)
 
 
@@ -146,6 +146,7 @@ if __name__ == "__main__":
     parser.add_argument("--skip_defrag", help="Skip defragmenting the VMDKs", action="store_true")
     parser.add_argument("--skip_shrink", help="Skip shrinking the VMDKs", action="store_true")
     parser.add_argument("--vagrantify", help="Prepare the .BOX archive for vagrant and to be uploaded", action="store_true")
+    parser.add_argument("--include-vagrantfile", help="Include a vagrantfile to be used as a template when combined with --vagrantify", action="store", default='')
     args = parser.parse_args()
 
 
